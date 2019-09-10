@@ -1,0 +1,117 @@
+body {
+	padding: 20px;
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 13px;
+	overflow: hidden;
+}
+h1 {
+	margin: 0;
+}
+nav {
+	display: flex;
+	flex-flow: row wrap;
+	align-content: center;
+	justify-content: space-between;
+	align-items: center;
+	background: #eee;
+	margin: 10px 0;
+	padding: 0px;
+}
+main {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	max-width: 100%;
+	box-sizing: border-box;
+	height: calc(100vh - 200px);
+}
+section {
+	display: flex;
+	flex-flow: column nowrap;
+	overflow: auto;
+	min-height: 100%;
+	max-width: 100%;
+}
+section.main {
+	flex: 4 1 auto;
+}
+section.aside {
+	flex: 0 4 auto;
+}
+
+:not(input):not(output) {
+	user-select: none;
+}
+section output {
+	display: block;
+	padding: 10px 20px;
+	background: #222;
+	color: white;
+	font-family: Menlo;
+	font-size: 14px;
+	line-height: 1.8em;
+	overflow: auto;
+	flex: 1 1 0%;
+	white-space: pre-line;
+	user-select: text;
+}
+section input {
+	background: #444;
+	display: block;
+	flex: 0 0 40px;
+	border: none;
+	border-radius: 0;
+	outline: none;
+	padding: 5px 15px;
+	font-size: 16px;
+	line-height: 30px;
+	color: white;
+	user-select: initial;
+}
+section input:before {
+	content: " > ";
+}
+
+div {
+	display: inline-block;
+	border: none;
+	padding: 10px;
+	flex: 0 0 auto;
+	border-radius: 5px;
+}
+div select,
+div button,
+div input:not([type="checkbox"]):not([type="radio"]) {
+	vertical-align: middle;
+	border: 1px solid #ccc;
+	padding: 0 10px;
+	font-size: 13px;
+	height: 28px;
+	line-height: 26px;
+	box-sizing: border-box;
+	outline: none;
+	border-radius: 2px;
+	white-space: nowrap;
+}
+div select:focus,
+div button:focus,
+div input:not([type="checkbox"]):not([type="radio"]):focus {
+	border-color: lightsalmon;
+}
+div select,
+div button {
+	background: #fff;
+}
+div select:active,
+div button:active {
+	background: #eee;
+}
+div select {
+	-webkit-appearance: button;
+}
+div label {
+	vertical-align: middle;
+	padding: 5px 10px;
+}

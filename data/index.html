@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>ESP Serial Monitor</title>
+<link rel="stylesheet" type="text/css" href="console.css">
+<h1>ESP Serial Console</h1>
+<nav>
+	<div>
+		<input type="text" bind="state.host" placeholder="hostname"/>
+		<input type="number" bind="state.port" placeholder="port" style="width: 60px;"/>
+		<input type="button" bind="connect_btn_status" onclick="connectButtonHandler(event)" />
+	</div>
+	<div>
+		<label>Baud Rate:</label>
+		<select type="number" bind="state.baud" onchange="configSerial()">
+			<option>1200</option>
+			<option>2400</option>
+			<option>4800</option>
+			<option>9600</option>
+			<option>19200</option>
+			<option>38400</option>
+			<option>57600</option>
+			<option>74880</option>
+			<option>115200</option>
+			<option>230400</option>
+		</select>
+		<button onclick="detectBaudrate()">Detect</button>
+	</div>
+	<div>
+		<label>Config:</label>
+		<select type="text" bind="state.mode[0]" onchange="configSerial()" title="Data Bits">
+			<option>8</option>
+			<option>7</option>
+			<option>6</option>
+			<option>5</option>
+		</select>
+		<select type="text" bind="state.mode[1]" onchange="configSerial()" title="Parity">
+			<option value="N">None</option>
+			<option value="O">Odd</option>
+			<option value="E">Even</option>
+		</select>
+		<select type="text" bind="state.mode[2]" onchange="configSerial()" title="Stop Bits">
+			<option>1</option>
+			<option>2</option>
+		</select>
+	</div>
+	<div>
+		<label><input type="checkbox" bind="state.swap" onchange="configSerial()"/>Swap UART Pins</label>
+	</div>
+	<div>
+		<button onclick="resetAVR()">Reset uC</button>
+	</div>
+</nav>
+<main>
+	<section class="main">
+		<output></output>
+		<input onkeypress="submitMessageHandler(event)" placeholder="Press [Enter] to send and [Esc] to clear." />
+	</section>
+</main>
+<nav>
+	<div>
+		<select type="text" bind="state.lineEnding">
+			<option value="NO">No Line Ending</option>
+			<option value="CR">Cariage Return</option>
+			<option value="NL">New Line</option>
+			<option value="CR+NL">Both CR & NL</option>
+		</select>
+		<select type="text" bind="state.encode">
+			<option value="TXT">TXT</option>
+			<option value="DEC">DEC</option>
+			<option value="HEX">HEX</option>
+			<option value="BIN">BIN</option>
+		</select>
+	</div>
+	<div>
+		<label><input type="checkbox" bind="state.autoScroll"/>Auto Scroll</label>
+		<label><input type="checkbox" bind="state.autoReset"/>Auto Reset</label>
+	</div>
+	<div>
+		<button onclick="clearOutput()">Clear Console</button>
+	</div>
+</nav>
+<script type="text/javascript" src="decoder.js"></script>
+<script type="text/javascript" src="request.js"></script>
+<script type="text/javascript" src="console.js"></script>
