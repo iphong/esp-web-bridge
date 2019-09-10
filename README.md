@@ -1,2 +1,3 @@
-# esp-web-console
-ESP8266 WebSocket Serial Bridge and ISP Programmer
+# ESP Web Bridge
+
+ESP8266 Serial Bridge over WebSocket and AVR ISP Programmer
