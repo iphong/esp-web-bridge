@@ -823,6 +823,3 @@ void WebSocketsServer::handleHeader(WSclient_t * client, String * headerLine) {
         }
     }
 }
-
-
-

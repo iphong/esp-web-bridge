@@ -12,10 +12,15 @@ void wifi_check() {
 void wifi_setup() {
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(wifi_station_get_hostname(), "");
-  if (cfg.sta_ssid != "") {
+  if (strlen(cfg.sta_ssid) != 0) {
     WiFi.begin(cfg.sta_ssid, cfg.sta_pass);
   }
+  display.setCursor(0, 0);
+  display.println("Connecting to WiFi...");
+  display.display();
   wifi_check();
+  display.println("Connected.");
+  display.display();
 }
 
 void wifi_handle_http_req() {

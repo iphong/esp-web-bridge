@@ -1,5 +1,6 @@
 #include "http.h"
 #include "uart.h"
+#include "wifi.h"
 
 File fs_upload_file;
 
@@ -49,7 +50,7 @@ String get_content_type(String filename) {
   return "text/plain";
 }
 
-bool fs_read_handler() {
+void fs_read_handler() {
   String path = http.uri();
   if (path.endsWith("/")) {
     path += "index.html";
@@ -63,19 +64,22 @@ bool fs_read_handler() {
     File file = SPIFFS.open(path, "r");
     http.streamFile(file, contentType);
     file.close();
-    return true;
+  } else {
+    send_404();
   }
-  return false;
 }
 
 void fs_upload_handler() {
   HTTPUpload& upload = http.upload();
   if (upload.status == UPLOAD_FILE_START) {
-    debug((String)"\nUpload start -> " + upload.filename + ":");
-    String filename = upload.filename;
-    if (!filename.startsWith("/")) {
-      filename = "/" + filename;
+    String filename = "/";
+    if (http.hasArg("dir")) {
+      filename = http.arg("dir");
+      if (!filename.endsWith("/")) filename += "/";
+      if (!filename.startsWith("/")) filename = "/" + filename;
     }
+    filename = filename + upload.filename;
+    debug((String)"\nUpload start -> " + filename + ":");
     fs_upload_file = SPIFFS.open(filename, "w");
     filename = String();
   } else if (upload.status == UPLOAD_FILE_WRITE) {
@@ -92,11 +96,8 @@ void fs_upload_handler() {
 }
 
 void fs_delete_handler() {
-  if (http.args() == 0) {
-    return http.send(500, "text/plain", "BAD ARGS");
-  }
-  String path = http.arg(0);
-  if (path == "/") {
+  String path = http.uri();
+  if (path.endsWith("/")) {
     return http.send(500, "text/plain", "BAD PATH");
   }
   if (!SPIFFS.exists(path)) {
@@ -108,11 +109,8 @@ void fs_delete_handler() {
 }
 
 void fs_create_handler() {
-  if (http.args() == 0) {
-    return http.send(500, "text/plain", "BAD ARGS");
-  }
-  String path = http.arg(0);
-  if (path == "/") {
+  String path = http.uri();
+  if (path.endsWith("/")) {
     return http.send(500, "text/plain", "BAD PATH");
   }
   if (SPIFFS.exists(path)) {
@@ -120,6 +118,7 @@ void fs_create_handler() {
   }
   File file = SPIFFS.open(path, "w");
   if (file) {
+    file.write(http.arg("content").c_str());
     file.close();
   } else {
     return http.send(500, "text/plain", "CREATE FAILED");
@@ -128,33 +127,81 @@ void fs_create_handler() {
   path = String();
 }
 
-void fs_list_handler() {
-  if (!http.hasArg("dir")) {
-    http.send(500, "text/plain", "BAD ARGS");
-    return;
+void fs_update_handler() {
+  String path = http.uri();
+  if (path.endsWith("/")) {
+    return http.send(500, "text/plain", "BAD PATH");
   }
-
-  String path = http.arg("dir");
-  Dir dir = SPIFFS.openDir(path);
+  File file = SPIFFS.open(path, "w");
+  if (file) {
+    file.write(http.arg("content").c_str());
+    file.close();
+  } else {
+    return http.send(500, "text/plain", "CREATE FAILED");
+  }
+  send_ok();
   path = String();
+}
 
-  String output = "[";
-  while (dir.next()) {
-    File entry = dir.openFile("r");
-    if (output != "[") {
-      output += ',';
-    }
-    bool isDir = false;
-    output += "{\"type\":\"";
-    output += (isDir) ? "dir" : "file";
-    output += "\",\"name\":\"";
-    output += String(entry.name()).substring(1);
-    output += "\"}";
-    entry.close();
+String getFileName(String filename) {
+  return filename.substring(filename.lastIndexOf('/')+1);
+}
+bool isFileInDir(String dirname, String filename) {
+  return dirname + getFileName(filename) == filename;
+}
+
+void fs_list_handler() {
+  String path = "/";
+  if (http.hasArg("dir")) {
+    path = http.arg("dir");
   }
+  if (!path.endsWith("/")) path += "/";
+  if (!path.startsWith("/")) path = "/" + path;
+  Dir dir = SPIFFS.openDir(path);
+  if (http.hasArg("json")) {
+    String json = "[";
+    while (dir.next()) {
+      File entry = dir.openFile("r");
+      if (json != "[") {
+        json += ',';
+      }
+      bool isDir = false;
+      json += "{\"type\":\"";
+      json += (isDir) ? "dir" : "file";
+      json += "\",\"name\":\"";
+      json += String(entry.name()).substring(1);
+      json += "\"}";
+      entry.close();
+    }
+    json += "]";
+    http.send(200, "text/json", json);
+    json = String();
+  } else {
+    String html = "<!DOCTYPE html>\n";
+    html += "<h1>Index of " + (path.length() == 1 ? path : path.substring(0, path.length() - 1)) + "</h1><ul>";
+    while (dir.next()) {
+      File entry = dir.openFile("r");
+      html += "<li><a href=\"" + String(entry.name()) + "\">" + String(entry.name()).substring(path.length()) + "</a></li>";
+      entry.close();
+    }
+    html += "</ul>";
+    http.send(200, "text/html", html);
+    html = String();
+  }
+  path = String();
+}
 
-  output += "]";
-  http.send(200, "text/json", output);
+void fs_handler() {
+  http.sendHeader("Access-Control-Allow-Origin", "*");
+  http.sendHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,HEAD");
+  String path = http.uri();
+  switch (http.method()) {
+    case HTTP_GET: fs_read_handler(); break;
+    case HTTP_PUT: fs_create_handler(); break;
+    case HTTP_POST: fs_update_handler(); break;
+    case HTTP_DELETE: fs_delete_handler(); break;
+    default: http.send(200);
+  }
 }
 
 bool save_cfg_int(uint32_t *addr, String arg) {
@@ -221,6 +268,17 @@ void config_handler() {
   }
 }
 
+void wifi_handler() {
+  if (http.hasArg("ssid") && http.hasArg("pass")) {
+    cfg.sta_ssid = http.arg("ssid").c_str();
+    cfg.sta_pass = http.arg("pass").c_str();
+    wifi_setup();
+    send_json((char *)"OK");
+  } else {
+    send_json((char *)"NOT OK");
+  }
+}
+
 void reset_handler() {
   avrprog.setReset(true);
   avrprog.setReset(false);
@@ -235,22 +293,8 @@ void baudrate_detect_handler() {
 
 void http_setup() {
 
-  SPIFFS.begin();
-
-  http.on("/fs", HTTP_GET, fs_list_handler);
-  http.on("/fs", HTTP_PUT, fs_create_handler);
-  http.on("/fs", HTTP_DELETE, fs_delete_handler);
-  http.on("/fs", HTTP_POST, send_ok, fs_upload_handler);
-
-  http.on("/config", config_handler);
-  http.on("/command/reset", reset_handler);
-  http.on("/command/detect_baudrate", baudrate_detect_handler);
-
-  http.onNotFound(fs_read_handler);
-
-  http.begin();
 }
 
 void http_loop() {
-  http.handleClient();
+
 }

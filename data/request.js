@@ -4,7 +4,7 @@ function post(path, params) {
 function get(path, params) {
 	return request(path, params, 'GET')
 }
-async function request(path, params = {}, method) {
+async function request(path, params = {}, method, data) {
 	return new Promise((resolve = console.log, reject = console.warn) => {
 		const req = new XMLHttpRequest()
 		const query = Object.entries(params).map(([name, value]) => {
@@ -26,6 +26,6 @@ async function request(path, params = {}, method) {
 			} else resolve(responseValue)
 		})
 		req.addEventListener('error', reject)
-		req.send()
+		req.send(data)
 	})
 }

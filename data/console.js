@@ -5,7 +5,6 @@ let state = {}
 let config = {}
 let connect_btn_status = 'Connect'
 
-
 try {
 	state = JSON.parse(localStorage.getItem('esp-monitor-state')) || state
 } finally {
@@ -39,7 +38,7 @@ window.addEventListener('drop', e => {
 	const file = e.dataTransfer.files[0]
 	const req = new XMLHttpRequest()
 	form.append('file', file)
-	req.open('POST', 'http://esp.local/upload', true)
+	req.open('POST', 'http://' + state.host + "/files", true)
 	req.send(form)
 }, true)
 window.addEventListener('change', e => {
