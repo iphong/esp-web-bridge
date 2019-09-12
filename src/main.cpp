@@ -41,13 +41,11 @@ void setup() {
   avrprog.begin();
   avrprog.setReset(false);
 
-  // http.onFileUpload(fs_upload_handler);
-
   http.on("/wifi", wifi_handler);
-  http.on("/files", fs_list_handler);
   http.on("/config", config_handler);
 
-  http.on("/", HTTP_POST, fs_handler, fs_upload_handler);
+  http.on("/files", HTTP_GET, fs_list_handler);
+  http.on("/files", HTTP_POST, fs_handler, fs_upload_handler);
   http.onNotFound(fs_handler);
   http.serveStatic("/", SPIFFS, "/");
   // http.on("/command/reset", reset_handler);
@@ -72,12 +70,6 @@ void loop() {
     case AVRISP_STATE_IDLE:
       ws.loop();
       serial_loop();
-      display.clearDisplay();
-      display.setCursor(0, 0);
-      display.println(WiFi.localIP());
-      display.println(WiFi.softAPIP());
-      display.setCursor(0, 56);
-      display.println(dur);
       ui_loop();
       break;
   }

@@ -40,6 +40,8 @@ extern WebSocketsServer ws;
 extern bool serial_active;
 extern Adafruit_SSD1306 display;
 
+extern uint16_t dur;
+
 void debug(String msg);
 
 
