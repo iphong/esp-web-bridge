@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalDependencies">
+    <plugin id="NodeJS" />
+    <plugin id="com.deadlock.scsyntax" />
+    <plugin id="com.intellij.CloudConfig" />
+    <plugin id="com.suming.react.PropTypes" />
+    <plugin id="mobi.hsz.idea.gitignore" />
+    <plugin id="org.editorconfig.editorconfigjetbrains" />
+    <plugin id="org.jetbrains.plugins.github" />
+  </component>
+</project>

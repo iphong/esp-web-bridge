@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <SPI.h>
+#include <Ticker.h>
 #include <Wire.h>
 #include <FS.h>
 #include <ArduinoOTA.h>
@@ -14,25 +15,26 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
+#define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
+#define ARRAYEND(x) (&(x)[ARRAYLEN(x)])
+
+#define LOOKUP_TABLE_ENTRY(name) { name, ARRAYLEN(name) }
+#define LOOKUP_TABLE_ARG(name) name, ARRAYLEN(name)
+
 struct Config {
-  const char * hostname = (char *)"esp";
+  const char * hostname = "esp";
 
-  const char * sta_ssid = (char *)"Tu";
-  const char * sta_pass = (char *)"88888888";
-
-  int pgm_port = 23;
-  int http_port = 80;
-  int ota_port = 8266;
-  int ws_port = 81;
+  const char * sta_ssid = "Tu";
+  const char * sta_pass = "88888888";
 
   int led_pin = 2;
   int reset_pin = 16;
 
   bool serial_swap     = false;
-  bool serial_debug    = false;
-  String serial_mode   = "8N1";
+  const char * serial_mode   = "8N1";
   uint32_t serial_baud = 115200;
 };
+
 extern Config cfg;
 extern ESP8266AVRISP avrprog;
 extern ESP8266WebServer http;

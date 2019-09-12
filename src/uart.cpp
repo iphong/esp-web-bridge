@@ -1,9 +1,7 @@
 #include "uart.h"
 #include "http.h"
 
-uint8_t buf[512] = {};
-
-const SerialConfig serialConfig[24] = {
+const SerialConfig SERIAL_MODES[] = {
   SERIAL_5N1, SERIAL_6N1, SERIAL_7N1, SERIAL_8N1,
   SERIAL_5N2, SERIAL_6N2, SERIAL_7N2, SERIAL_8N2,
   SERIAL_5E1, SERIAL_6E1, SERIAL_7E1, SERIAL_8E1,
@@ -12,7 +10,7 @@ const SerialConfig serialConfig[24] = {
   SERIAL_5O2, SERIAL_6O2, SERIAL_7O2, SERIAL_8O2
 };
 
-const String serialConfigString[24] = {
+static const char * SERIAL_MODES_STR[] = {
   "5N1" , "6N1" , "7N1" , "8N1" ,
   "5N2" , "6N2" , "7N2" , "8N2" ,
   "5E1" , "6E1" , "7E1" , "8E1" ,
@@ -21,18 +19,19 @@ const String serialConfigString[24] = {
   "5O2" , "6O2" , "7O2" , "8O2"
 };
 
-bool serial_active;
+static const char * SERIAL_BAUDRATES[] = {
+  "4800", "9600", "19200", "38400",
+  "57600", "74880", "115200", "230400"
+};
 
-SerialConfig lastResult = SERIAL_8N1;
-
-SerialConfig getSerialConfig(String cfg) {
-  for (uint8_t i=0; i<24; i++) {
-    if (serialConfigString[i] == cfg) {
-      lastResult = serialConfig[i];
-    }
+int lookup(const char * value, const char ** array, size_t size) {
+  for (size_t i = 0; i < size; i++) {
+    if (array[i] == value) return i;
   }
-  return lastResult;
+  return -1;
 }
+
+bool serial_active;
 
 void debug(String s) {
   ws.broadcastTXT(s);
@@ -41,10 +40,15 @@ void debug(String s) {
 void serial_setup() {
   serial_close();
   avrprog.setReset(true);
-  Serial.begin(cfg.serial_baud, getSerialConfig(cfg.serial_mode));
+
+  Serial.begin(
+    cfg.serial_baud,
+    SERIAL_MODES[lookup(cfg.serial_mode, SERIAL_MODES_STR, ARRAYLEN(SERIAL_MODES_STR))]
+  );
+
   while (Serial.available()) Serial.read();
   if (cfg.serial_swap) Serial.swap();
-  Serial.setDebugOutput(cfg.serial_debug);
+  Serial.setDebugOutput(false);
   debug((String)"\nSERIAL: " + cfg.serial_mode + " "  + cfg.serial_baud + " - SWAP:" + cfg.serial_swap + "\n");
   serial_active = true;
   avrprog.setReset(false);
@@ -59,12 +63,5 @@ void serial_close() {
 }
 
 void serial_loop() {
-  if (Serial.available()) {
-    delay(10);
-    int i = 0;
-    while (Serial.available()) {
-      buf[i++] = Serial.read();
-    }
-    ws.broadcastBIN(buf, (size_t)i);
-  }
+
 }

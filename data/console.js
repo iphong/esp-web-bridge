@@ -133,27 +133,27 @@ function submitMessageHandler(e) {
 	switch (e.key) {
 		case 'Enter': {
 			e.preventDefault();
-			if (ws && ws.readyState === ws.OPEN) {
-				let val = e.target.value
-				switch (state.encode) {
-					case 'HEX':
-						val = val.trim().split(/\s+/).map(i => String.fromCharCode(parseInt(i, 16))).join('')
-						break
-					case 'BIN':
-						val = val.trim().split(/\s+/).map(i => String.fromCharCode(parseInt(i, 2))).join('')
-						break
-					case 'DEC':
-						val = val.trim().split(/\s+/).map(i => String.fromCharCode(parseInt(i, 10))).join('')
-						break
-				}
-				switch (state.lineEnding) {
-					case 'CR': val = val + '\r'; break
-					case 'NL': val = val + '\n'; break
-					case 'CR+NL': val = val + '\r\n'; break
-				}
-				ws.send(val)
-				e.target.value = ''
+			let val = utf8_to_ascii_raw(e.target.value)
+			switch (state.encode) {
+				case 'HEX':
+					val = val.map(i => parseInt(i, 16)).join('')
+					break
+				case 'BIN':
+					val = val.map(i => parseInt(i, 2)).join('')
+					break
+				case 'DEC':
+					val = val.map(i => parseInt(i, 10)).join('')
+					break
 			}
+			switch (state.lineEnding) {
+				case 'CR': val.push(10); break
+				case 'NL': val.push(13); break
+				case 'CR+NL': val.push(10, 13); break
+			}
+			if (ws && ws.readyState === ws.OPEN) {
+				ws.send(new Uint8Array(val))
+			}
+			e.target.value = ''
 			break;
 		}
 		case 'Escape': {

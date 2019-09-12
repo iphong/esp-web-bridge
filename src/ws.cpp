@@ -158,14 +158,9 @@ void send_info() {
 void ws_handler(uint8_t num, WStype_t type, uint8_t * payload, size_t len) {
   switch (type) {
     case WStype_TEXT:
-      if (serial_active) {
-        Serial.printf("%s", payload);
-      }
-      break;
     case WStype_BIN:
       if (serial_active) {
-        for (size_t i = 0; i < len; i++)
-          Serial.write(payload[i]);
+        Serial.printf("%s", payload);
       }
       break;
     case WStype_CONNECTED:
@@ -175,6 +170,8 @@ void ws_handler(uint8_t num, WStype_t type, uint8_t * payload, size_t len) {
     case WStype_DISCONNECTED:
       serial_close();
       break;
-    default: {}
+    default: {
+      debug((String)"ws unknown :" + type);
+    }
   }
 }

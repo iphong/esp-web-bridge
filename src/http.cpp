@@ -5,17 +5,14 @@
 File fs_upload_file;
 
 void send_ok() {
-  http.sendHeader("Access-Control-Allow-Origin", "*");
   http.send(200, "application/json", "\"OK\"");
 }
 
 void send_404() {
-  http.sendHeader("Access-Control-Allow-Origin", "*");
   http.send(404, "text/plain", "FileNotFound");
 }
 
 void send_json(char * data) {
-  http.sendHeader("Access-Control-Allow-Origin", "*");
   http.send(200, "application/json", data);
 }
 
@@ -65,6 +62,8 @@ void fs_read_handler() {
     http.streamFile(file, contentType);
     file.close();
   } else {
+    if (http.uri().endsWith("/"))
+      return fs_list_handler();
     send_404();
   }
 }
@@ -118,36 +117,31 @@ void fs_create_handler() {
   }
   File file = SPIFFS.open(path, "w");
   if (file) {
-    file.write(http.arg("content").c_str());
+    file.write(http.arg("plain").c_str());
     file.close();
   } else {
     return http.send(500, "text/plain", "CREATE FAILED");
   }
+  RequestHandler handler();
   send_ok();
   path = String();
 }
 
 void fs_update_handler() {
   String path = http.uri();
+
   if (path.endsWith("/")) {
     return http.send(500, "text/plain", "BAD PATH");
   }
   File file = SPIFFS.open(path, "w");
   if (file) {
-    file.write(http.arg("content").c_str());
+    file.write(http.arg("plain").c_str());
     file.close();
   } else {
     return http.send(500, "text/plain", "CREATE FAILED");
   }
   send_ok();
   path = String();
-}
-
-String getFileName(String filename) {
-  return filename.substring(filename.lastIndexOf('/')+1);
-}
-bool isFileInDir(String dirname, String filename) {
-  return dirname + getFileName(filename) == filename;
 }
 
 void fs_list_handler() {
@@ -193,14 +187,13 @@ void fs_list_handler() {
 
 void fs_handler() {
   http.sendHeader("Access-Control-Allow-Origin", "*");
-  http.sendHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,HEAD");
-  String path = http.uri();
+  http.sendHeader("Access-Control-Allow-Methods", "*");
   switch (http.method()) {
-    case HTTP_GET: fs_read_handler(); break;
-    case HTTP_PUT: fs_create_handler(); break;
-    case HTTP_POST: fs_update_handler(); break;
+    case HTTP_GET:    fs_read_handler();   break;
+    case HTTP_PUT:    fs_create_handler(); break;
+    case HTTP_PATCH:  fs_update_handler(); break;
     case HTTP_DELETE: fs_delete_handler(); break;
-    default: http.send(200);
+    default: http.send(404);
   }
 }
 
@@ -234,7 +227,7 @@ void config_handler() {
       serial |= save_cfg_int(&cfg.serial_baud, "serial_baud");
       serial |= save_cfg_bool(&cfg.serial_swap, "serial_swap");
       if (http.hasArg("serial_mode")) {
-        cfg.serial_mode = http.arg("serial_mode");
+        cfg.serial_mode = http.arg("serial_mode").c_str();
         serial = true;
       }
       if (serial_active) {
@@ -250,14 +243,12 @@ void config_handler() {
           "\"serial_mode\": \"%s\","
           "\"serial_baud\": %u,"
           "\"serial_swap\": %u,"
-          "\"serial_debug\": %u,"
           "\"reset_pin\": %u,"
           "\"hostname\": \"%s\""
         "}",
-        cfg.serial_mode.c_str(),
+        cfg.serial_mode,
         cfg.serial_baud,
         cfg.serial_swap,
-        cfg.serial_debug,
         cfg.reset_pin,
         cfg.hostname
       );
@@ -289,12 +280,4 @@ void baudrate_detect_handler() {
   uint32_t baud = Serial.detectBaudrate(10000);
   http.sendHeader("Access-Control-Allow-Origin", "*");
   http.send(200, "application/json", (String)baud);
-}
-
-void http_setup() {
-
-}
-
-void http_loop() {
-
 }
