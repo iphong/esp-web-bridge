@@ -133,25 +133,31 @@ function submitMessageHandler(e) {
 	switch (e.key) {
 		case 'Enter': {
 			e.preventDefault();
-			let val = utf8_to_ascii_raw(e.target.value)
+			let val = e.target.value
+			let rawVal = val.split(/\s+/)
 			switch (state.encode) {
 				case 'HEX':
-					val = val.map(i => parseInt(i, 16)).join('')
+					val = rawVal.map(i => String.fromCharCode(parseInt(i, 16))).join('')
 					break
 				case 'BIN':
-					val = val.map(i => parseInt(i, 2)).join('')
+					val = rawVal.map(i => String.fromCharCode(parseInt(i, 2))).join('')
 					break
 				case 'DEC':
-					val = val.map(i => parseInt(i, 10)).join('')
+					val = rawVal.map(i => String.fromCharCode(parseInt(i, 10))).join('')
 					break
 			}
 			switch (state.lineEnding) {
-				case 'CR': val.push(10); break
-				case 'NL': val.push(13); break
-				case 'CR+NL': val.push(10, 13); break
+				case 'CR': val += '\r'; break
+				case 'NL': val += '\n'; break
+				case 'CR+NL': val += '\r\n'; break
 			}
 			if (ws && ws.readyState === ws.OPEN) {
-				ws.send(new Uint8Array(val))
+				if (state.encode === 'TXT') {
+					ws.send(val)
+				} else {
+					console.log(val.split('').map(c => c.charCodeAt(0)))
+					ws.send(new Uint8Array(val.split('').map(c => c.charCodeAt(0))))
+				}
 			}
 			e.target.value = ''
 			break;
