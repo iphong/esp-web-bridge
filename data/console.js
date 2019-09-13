@@ -1,4 +1,4 @@
-const version = 0x15
+const version = 0x18
 
 let ws = null
 let state = {}
@@ -12,11 +12,13 @@ try {
 		state = {
 			version,
 			host: 'esp.local',
-			port: 88,
+			port: 81,
 			baud: 115200,
 			mode: ['8', 'N', '1'],
 			swap: true,
-			encode: 'TXT',
+			sendTXT: true,
+			sendBIN: true,
+			encoding: 'txt',
 			autoScroll: true,
 			autoReset: true,
 			historySize: 100,
@@ -69,9 +71,9 @@ window.addEventListener('change', e => {
 
 function getConfig() {
 	get('config').then(cfg => {
-		state.baud = cfg.serial_baud
-		state.mode = cfg.serial_mode.split('')
-		state.swap = !!cfg.serial_swap
+		state.baud = cfg.bridge_baud
+		state.mode = cfg.bridge_mode.split('')
+		state.swap = !!cfg.bridge_swap
 		render()
 	})
 }
@@ -119,44 +121,50 @@ function connect() {
 	ws.addEventListener('message', (e) => {
 		switch (typeof e.data) {
 			case 'string':
-				print(e.data)
+				print(e.data, 'utf-8')
 				break
 			case 'object':
-				handleBinary(e.data)
+				print(textDecode(e.data), state.encoding)
 				break
+			default:
+				console.warn('Unknown message data type')
 		}
 	})
 	render()
 }
 
+const textEncode = input => new TextEncoder().encode(input)
+const textDecode = input => new TextDecoder().decode(input)
+const intArrayEncode = (input, radix) => new Uint8Array(input.split(' ').map(c => parseInt(c, radix)))
+const intArrayDecode = (input, radix, size) => {
+	return [...textEncode(input)].map(c => c.toString(radix).padStart(size, '0').toUpperCase() + ' ').join('') + ' '
+}
+const charDecode = (char, radix, size) => {
+	return char.codePointAt(0).toString(radix).padStart(size, '0') + ' '
+}
 function submitMessageHandler(e) {
 	switch (e.key) {
 		case 'Enter': {
 			e.preventDefault();
 			let val = e.target.value
-			let rawVal = val.split(/\s+/)
-			switch (state.encode) {
-				case 'HEX':
-					val = rawVal.map(i => String.fromCharCode(parseInt(i, 16))).join('')
-					break
-				case 'BIN':
-					val = rawVal.map(i => String.fromCharCode(parseInt(i, 2))).join('')
-					break
-				case 'DEC':
-					val = rawVal.map(i => String.fromCharCode(parseInt(i, 10))).join('')
-					break
-			}
 			switch (state.lineEnding) {
-				case 'CR': val += '\r'; break
-				case 'NL': val += '\n'; break
-				case 'CR+NL': val += '\r\n'; break
+				case 'CR': val += '\n'; break
+				case 'LF': val += '\r'; break
+				case 'CR+LF': val += '\r\n'; break
+			}
+			switch (state.encoding) {
+				case 'txt': val = textEncode(val); break
+				case 'hex': val = intArrayEncode(val, 16); break
+				case 'dec': val = intArrayEncode(val, 10); break
+				case 'bin': val = intArrayEncode(val, 2); break
 			}
 			if (ws && ws.readyState === ws.OPEN) {
-				if (state.encode === 'TXT') {
+				if (!val) break
+				if (state.sendBIN) {
 					ws.send(val)
-				} else {
-					console.log(val.split('').map(c => c.charCodeAt(0)))
-					ws.send(new Uint8Array(val.split('').map(c => c.charCodeAt(0))))
+				}
+				if (state.sendTXT) {
+					ws.send(textDecode(val))
 				}
 			}
 			e.target.value = ''
@@ -189,9 +197,9 @@ async function resetAVR() {
 }
 async function configSerial() {
 	await post('config', {
-		serial_baud: state.baud,
-		serial_swap: state.swap,
-		serial_mode: state.mode.join('')
+		bridge_baud: state.baud,
+		bridge_swap: state.swap,
+		bridge_mode: state.mode.join('')
 	})
 	if (state.autoReset) {
 		resetAVR()
@@ -208,59 +216,39 @@ async function detectBaudrate() {
 	return false
 }
 
-function print(str) {
-	const output = document.querySelector('output')
-	str = str.replace(/(\r|\n)+/g, '\n')
-	if (!output.childNodes[0]) {
-		output.append(str)
-	} else {
-		output.childNodes[output.childNodes.length - 1].appendData(str)
-		if (str.endsWith('\n')) {
-			output.append('')
+let line
+const output = document.querySelector('output')
+const newLine = () => {
+	line = document.createElement('line')
+	output.appendChild(line)
+}
+function print(str, encoding) {
+	let i = 0, char
+	if (!output.children.length) newLine()
+	while (char = str[i++]) {
+		if (char === '\n') {
+			newLine()
+			continue
 		}
+		if (char === '\r') {
+			continue
+		}
+		if (!line.innerText)
+			line.innerText = ''
+		switch (encoding) {
+			case 'hex': char = intArrayDecode(char,16, 2); break
+			case 'dec': char = intArrayDecode(char,10, 3); break
+			case 'bin': char = intArrayDecode(char,02, 8); break
+		}
+		line.innerText += char
 	}
-	if (output.childNodes.length > state.historySize) {
-		output.removeChild(output.childNodes[0])
+	if (output.children.length > state.historySize) {
+		output.removeChild(output.children[0])
 	}
 	if (state.autoScroll) {
-		output.scrollTop = output.scrollHeight
+		line.scrollIntoView()
 	}
 }
-function handleBinary(buf) {
-	let output = '';
-	const view = new DataView(buf)
-	for (let i = 0 ; i < buf.byteLength ; i++) {
-		const code = view.getUint8(i);
-		let char;
-		switch (state.encode) {
-			case 'DEC':
-				char = code.toString(10);
-				// if (char.length == 1) char = '00' + char
-				// else if (char.length == 2) char = '0' + char
-				if (code === 10) char += '\n'
-				else char += ' '
-				break
-			case 'HEX':
-				char = code.toString(16).toUpperCase();
-				if (char.length == 1) char = '0' + char
-				if (code === 10) char += '\n'
-				else char += ' '
-				break
-			case 'BIN':
-				char = (256 | code).toString(2).slice(1, 9);
-				if (code === 10) char += '\n'
-				else char += ' '
-				break
-			case 'TXT':
-				char = decoder.write(code);
-				break
-		}
-		output += char
-	}
-	print(output)
-}
-
-
 
 function save() {
 	localStorage.setItem('esp-monitor-state', JSON.stringify(state))

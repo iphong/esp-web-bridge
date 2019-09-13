@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <gpio.h>
 #include <SPI.h>
 #include <Ticker.h>
 #include <Wire.h>
@@ -30,18 +31,19 @@ struct Config {
   int led_pin = 2;
   int reset_pin = 16;
 
-  bool serial_swap     = false;
-  const char * serial_mode   = "8N1";
-  uint32_t serial_baud = 115200;
+  bool bridge_swap     = false;
+  const char * bridge_mode   = "8N1";
+  uint32_t bridge_baud = 115200;
 };
 
 extern Config cfg;
 extern ESP8266AVRISP avrprog;
 extern ESP8266WebServer http;
 extern WebSocketsServer ws;
-extern bool serial_active;
+extern WiFiServer ss;
 extern Adafruit_SSD1306 display;
 
+extern bool uart_active;
 extern uint16_t dur;
 
 void debug(String msg);

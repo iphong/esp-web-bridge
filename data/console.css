@@ -46,16 +46,11 @@ section.aside {
 }
 section output {
 	display: block;
-	padding: 10px 20px;
 	background: #222;
 	color: white;
 	font-family: Menlo;
-	font-size: 14px;
-	line-height: 1.8em;
 	overflow: auto;
 	flex: 1 1 0%;
-	white-space: pre-line;
-	user-select: text;
 }
 section input {
 	background: #444;
@@ -72,6 +67,17 @@ section input {
 }
 section input:before {
 	content: " > ";
+}
+
+section output line {
+	display: block;
+	white-space: pre;
+	user-select: text;
+	font-size: 14px;
+	height: 1.8em;
+	line-height: 1.8em;
+	padding: 0px 20px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 div {

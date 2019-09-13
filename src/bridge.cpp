@@ -1,5 +1,29 @@
-#include "ws.h"
-#include "uart.h"
+#include "bridge.h"
+#include "http.h"
+
+const SerialConfig SERIAL_MODES[] = {
+  SERIAL_5N1, SERIAL_6N1, SERIAL_7N1, SERIAL_8N1,
+  SERIAL_5N2, SERIAL_6N2, SERIAL_7N2, SERIAL_8N2,
+  SERIAL_5E1, SERIAL_6E1, SERIAL_7E1, SERIAL_8E1,
+  SERIAL_5E2, SERIAL_6E2, SERIAL_7E2, SERIAL_8E2,
+  SERIAL_5O1, SERIAL_6O1, SERIAL_7O1, SERIAL_8O1,
+  SERIAL_5O2, SERIAL_6O2, SERIAL_7O2, SERIAL_8O2
+};
+
+static const char * SERIAL_MODES_STR[] = {
+  "5N1" , "6N1" , "7N1" , "8N1" ,
+  "5N2" , "6N2" , "7N2" , "8N2" ,
+  "5E1" , "6E1" , "7E1" , "8E1" ,
+  "5E2" , "6E2" , "7E2" , "8E2" ,
+  "5O1" , "6O1" , "7O1" , "8O1" ,
+  "5O2" , "6O2" , "7O2" , "8O2"
+};
+
+static const char * SERIAL_BAUDRATES[] = {
+  "4800", "9600", "19200", "38400",
+  "57600", "74880", "115200", "230400"
+};
+
 
 char tmp[20];
 const char * const RST_REASONS[] = {
@@ -155,28 +179,110 @@ void send_info() {
   debug("\n\n--------------------------------------\n");
 }
 
+int lookup(const char * value, const char ** array, size_t size) {
+  for (size_t i = 0; i < size; i++) {
+    if (array[i] == value) return i;
+  }
+  return -1;
+}
+
+bool uart_active;
+WiFiClient clients[4];
+uint8_t buf[512];
+Ticker hb([]() {  }, 500, MILLIS);
+
+void debug(String s) {
+  ws.broadcastTXT(s);
+}
+
+void uart_init() {
+  uart_close();
+  Serial.begin(
+    cfg.bridge_baud,
+    SERIAL_MODES[lookup(cfg.bridge_mode, SERIAL_MODES_STR, ARRAYLEN(SERIAL_MODES_STR))]
+  );
+  if (cfg.bridge_swap) Serial.swap();
+  Serial.setDebugOutput(false);
+  debug((String)"\nUART: " + cfg.bridge_mode + " "  + cfg.bridge_baud + " - SWAP:" + cfg.bridge_swap + "\n");
+  uart_active = true;
+}
+
+void uart_close() {
+  if (uart_active) {
+    Serial.flush();
+    Serial.end();
+    uart_active = false;
+  }
+}
+
+void bridge_init() {
+  ws.onEvent(ws_handler);
+  ws.begin();
+  ss.setNoDelay(true);
+  ss.begin();
+  hb.start();
+  uart_init();
+}
+
+void bridge_loop() {
+  ws.loop();
+  hb.update();
+  for (int i = 0; i < 4; i++) {
+    if (!clients[i]) { // equivalent to !serverClients[i].connected()
+      clients[i] = ss.available();
+      break;
+    }
+  }
+  for (int i = 0; i < 4; i++) {
+    if (clients[i].available()) {
+      size_t b = 0;
+      while (clients[i].available()) {
+        buf[b++] = clients[i].read();
+      }
+      ws.broadcastTXT(buf, b);
+      if (Serial.availableForWrite()) {
+        Serial.write(buf, b);
+      }
+    }
+  }
+
+  if (Serial.available()) {
+    size_t b = 0;
+    while (Serial.available() && b < 512) {
+      buf[b++] = Serial.read();
+    }
+    ws.broadcastBIN(buf, b);
+    for (int i = 0; i < 4; i++) {
+      if (clients[i] && clients[i].availableForWrite()) {
+        clients[i].write(buf, b);
+      }
+    }
+  }
+}
+
 void ws_handler(uint8_t num, WStype_t type, uint8_t * payload, size_t len) {
   switch (type) {
     case WStype_TEXT:
-      if (serial_active) {
-        Serial.printf("%s", payload);
+      if (uart_active) {
+        for (int i = 0; i < 4; i++) {
+          if (clients[i] && clients[i].availableForWrite()) {
+            clients[i].write(payload, len);
+          }
+        }
       }
       break;
     case WStype_BIN:
-      if (serial_active) {
-        for (size_t i = 0; i < len; i++)
-          Serial.write(payload[i]);
+      if (uart_active) {
+        Serial.printf("%s", payload);
       }
       break;
     case WStype_CONNECTED:
       send_info();
-      serial_setup();
+      // uart_init();
       break;
     case WStype_DISCONNECTED:
-      serial_close();
+      // uart_close();
       break;
-    default: {
-      debug((String)"ws unknown :" + type);
-    }
+      default: {}
   }
 }

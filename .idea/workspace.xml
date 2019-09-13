@@ -2,8 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="960c237e-4a5e-4ee8-953d-673620b968ee" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/data/TextDecoder.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/TextEncoder.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/utf8.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/console.css" beforeDir="false" afterPath="$PROJECT_DIR$/data/console.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/console.js" beforeDir="false" afterPath="$PROJECT_DIR$/data/console.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ws.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ws.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/decoder.js" beforeDir="false" afterPath="$PROJECT_DIR$/data/decoder.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/data/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inc/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/inc/main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inc/uart.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inc/wifi.h" beforeDir="false" afterPath="$PROJECT_DIR$/inc/wifi.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inc/ws.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/http.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/http.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/uart.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/wifi.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/wifi.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ws.cpp" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -15,12 +32,39 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/decoder.js">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/data/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3077">
-              <caret line="202" column="19" selection-start-line="202" selection-start-column="19" selection-end-line="202" selection-end-column="19" />
+            <state relative-caret-position="727">
+              <caret line="72" column="60" selection-start-line="72" selection-start-column="60" selection-end-line="72" selection-end-column="60" />
+              <folding>
+                <element signature="n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#div#0;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#1;n#div#0;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#div#1;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#select#0;n#div#1;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#div#2;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#select#0;n#div#2;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#select#1;n#div#2;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#select#2;n#div#2;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#div#3;n#nav#0;n#!!top" expanded="true" />
+                <element signature="n#main#0;n#!!top" expanded="true" />
+                <element signature="n#section#0;n#main#0;n#!!top" expanded="true" />
+                <element signature="n#div#0;n#nav#1;n#!!top" expanded="true" />
+                <element signature="n#select#0;n#div#0;n#nav#1;n#!!top" expanded="true" />
+                <element signature="n#select#1;n#div#0;n#nav#1;n#!!top" expanded="true" />
+                <element signature="n#div#2;n#nav#1;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/console.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="277">
+              <caret line="79" column="20" selection-start-line="79" selection-start-column="20" selection-end-line="79" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -28,24 +72,28 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/console.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="587">
-              <caret line="157" column="26" selection-start-line="157" selection-start-column="26" selection-end-line="157" selection-end-column="26" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/ws.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="622">
-              <caret line="166" column="40" selection-start-line="166" selection-start-column="40" selection-end-line="166" selection-end-column="40" />
+            <state relative-caret-position="405">
+              <caret line="162" column="12" lean-forward="true" selection-start-line="162" selection-start-column="12" selection-end-line="162" selection-end-column="12" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/index.html">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/data/TextDecoder.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="540">
+              <caret line="36" column="5" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/TextEncoder.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="555">
+              <caret line="37" column="30" selection-start-line="37" selection-start-column="2" selection-end-line="37" selection-end-column="30" />
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -58,9 +106,12 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/data/decoder.js" />
-        <option value="$PROJECT_DIR$/data/console.js" />
         <option value="$PROJECT_DIR$/src/ws.cpp" />
+        <option value="$PROJECT_DIR$/data/decoder.js" />
+        <option value="$PROJECT_DIR$/data/TextDecoder.js" />
+        <option value="$PROJECT_DIR$/data/console.css" />
+        <option value="$PROJECT_DIR$/data/console.js" />
+        <option value="$PROJECT_DIR$/data/index.html" />
       </list>
     </option>
   </component>
@@ -80,7 +131,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -102,6 +152,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -125,6 +176,11 @@
     <property name="prettierjs.PrettierConfiguration.Package" value="/usr/local/lib/node_modules/prettier" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.gutterIcons" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/data" />
+    </key>
+  </component>
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -147,21 +203,21 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1568296133741</updated>
-      <workItem from="1568296134925" duration="14368000" />
+      <workItem from="1568296134925" duration="14529000" />
+      <workItem from="1568344491928" duration="9318000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14368000" />
+    <option name="totallyTimeSpent" value="23847000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1478" height="1069" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="npm" order="0" sideWeight="0.528" side_tool="true" weight="0.26124403" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" sideWeight="0.472" visible="true" weight="0.15947075" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" sideWeight="0.472" visible="true" weight="0.1615599" />
       <window_info x="497" y="0" width="285" height="800" id="Favorites" internal_type="SLIDING" order="2" sideWeight="0.564" side_tool="true" type="SLIDING" weight="0.39375" />
-      <window_info anchor="bottom" id="GraphQL" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.409375" weight="0.322" />
       <window_info anchor="bottom" id="Debug" order="2" sideWeight="0.49086577" weight="0.3644315" />
@@ -180,6 +236,7 @@
       <window_info anchor="bottom" id="Inspection Results" order="15" sideWeight="0.4978903" weight="0.40125" />
       <window_info anchor="bottom" x="46" y="344" width="1006" height="137" id="Terminal" internal_type="SLIDING" order="16" sideWeight="0.5079523" side_tool="true" weight="0.23942308" />
       <window_info anchor="bottom" auto_hide="true" id="Event Log" internal_type="SLIDING" order="17" sideWeight="0.50906557" side_tool="true" type="SLIDING" weight="0.38606676" />
+      <window_info anchor="bottom" id="GraphQL" order="18" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" sideWeight="0.4868421" visible="true" weight="0.24664225" />
@@ -197,27 +254,127 @@
     <option name="SHOW_UNVERSIONED_FILES_WHILE_COMMIT" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/data/index.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/console.js">
+    <entry file="file://$PROJECT_DIR$/src/ws.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="587">
-          <caret line="157" column="26" selection-start-line="157" selection-start-column="26" selection-end-line="157" selection-end-column="26" />
+        <state relative-caret-position="52">
+          <caret line="128" column="30" lean-forward="true" selection-start-line="128" selection-start-column="30" selection-end-line="128" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/utf8.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1418">
+          <caret line="5" column="34" lean-forward="true" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/data/decoder.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3077">
-          <caret line="202" column="19" selection-start-line="202" selection-start-column="19" selection-end-line="202" selection-end-column="19" />
+        <state relative-caret-position="157">
+          <caret line="182" column="26" selection-start-line="182" selection-start-column="26" selection-end-line="182" selection-end-column="26" />
+          <folding>
+            <element signature="n#StringDecoder#0" />
+            <element signature="n#!!block;n#constructor#0;n#StringDecoder#0" />
+            <element signature="n#!!block;n#available#0;n#StringDecoder#0" />
+            <element signature="n#!!block;n#read#0;n#StringDecoder#0" />
+            <element signature="e#154#422#0" />
+            <element signature="e#182#226#0" />
+            <element signature="e#230#275#0" />
+            <element signature="e#279#324#0" />
+            <element signature="e#328#370#0" />
+            <element signature="e#374#418#0" />
+            <element signature="e#444#684#0" />
+            <element signature="e#544#681#0" />
+            <element signature="n#!!block;n#encode_int#0;n#StringDecoder#0" />
+            <element signature="e#768#880#0" />
+            <element signature="n#!!block;n#encode_ascii#0;n#StringDecoder#0" />
+            <element signature="e#1029#1798#0" />
+            <element signature="e#1068#1795#0" />
+            <element signature="e#1124#1385#0" />
+            <element signature="e#1404#1604#0" />
+            <element signature="e#1629#1768#0" />
+            <element signature="e#1820#2722#0" />
+            <element signature="e#1902#2659#0" />
+            <element signature="e#1907#2655#0" />
+            <element signature="e#2016#2074#0" />
+            <element signature="e#2092#2227#0" />
+            <element signature="e#2232#2422#0" />
+            <element signature="e#2427#2650#0" />
+            <element signature="n#!!block;n#utf8_to_ascii#0" />
+            <element signature="e#2874#3252#0" />
+            <element signature="e#2936#3224#0" />
+            <element signature="e#2957#3022#0" />
+            <element signature="e#3041#3106#0" />
+            <element signature="n#!!block;n#ascii_to_utf8#0" />
+            <element signature="e#3446#4187#0" />
+            <element signature="e#3470#4184#0" />
+            <element signature="e#3571#3626#0" />
+            <element signature="e#3642#3763#0" />
+            <element signature="e#3767#3949#0" />
+            <element signature="e#3953#4180#0" />
+            <element signature="e#4881#5622#0" />
+            <element signature="e#4905#5619#0" />
+            <element signature="e#5006#5061#0" />
+            <element signature="e#5077#5198#0" />
+            <element signature="e#5202#5384#0" />
+            <element signature="e#5388#5615#0" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ws.cpp">
+    <entry file="file://$PROJECT_DIR$/data/TextDecoder.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="622">
-          <caret line="166" column="40" selection-start-line="166" selection-start-column="40" selection-end-line="166" selection-end-column="40" />
+        <state relative-caret-position="540">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/TextEncoder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="37" column="30" selection-start-line="37" selection-start-column="2" selection-end-line="37" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/console.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="79" column="20" selection-start-line="79" selection-start-column="20" selection-end-line="79" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/console.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="162" column="12" lean-forward="true" selection-start-line="162" selection-start-column="12" selection-end-line="162" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="727">
+          <caret line="72" column="60" selection-start-line="72" selection-start-column="60" selection-end-line="72" selection-end-column="60" />
+          <folding>
+            <element signature="n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#div#0;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#1;n#div#0;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#div#1;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#select#0;n#div#1;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#div#2;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#select#0;n#div#2;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#select#1;n#div#2;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#select#2;n#div#2;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#div#3;n#nav#0;n#!!top" expanded="true" />
+            <element signature="n#main#0;n#!!top" expanded="true" />
+            <element signature="n#section#0;n#main#0;n#!!top" expanded="true" />
+            <element signature="n#div#0;n#nav#1;n#!!top" expanded="true" />
+            <element signature="n#select#0;n#div#0;n#nav#1;n#!!top" expanded="true" />
+            <element signature="n#select#1;n#div#0;n#nav#1;n#!!top" expanded="true" />
+            <element signature="n#div#2;n#nav#1;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

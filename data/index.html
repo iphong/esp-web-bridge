@@ -23,7 +23,7 @@
 			<option>115200</option>
 			<option>230400</option>
 		</select>
-		<button onclick="detectBaudrate()">Detect</button>
+<!--		<button onclick="detectBaudrate()">Detect</button>-->
 	</div>
 	<div>
 		<label>Config:</label>
@@ -46,9 +46,6 @@
 	<div>
 		<label><input type="checkbox" bind="state.swap" onchange="configSerial()"/>Swap UART Pins</label>
 	</div>
-	<div>
-		<button onclick="resetAVR()">Reset uC</button>
-	</div>
 </nav>
 <main>
 	<section class="main">
@@ -61,24 +58,26 @@
 		<select type="text" bind="state.lineEnding">
 			<option value="NO">No Line Ending</option>
 			<option value="CR">Cariage Return</option>
-			<option value="NL">New Line</option>
-			<option value="CR+NL">Both CR & NL</option>
+			<option value="LF">Line Feed</option>
+			<option value="CR+LF">Both CR & LF</option>
 		</select>
-		<select type="text" bind="state.encode">
-			<option value="TXT">TXT</option>
-			<option value="DEC">DEC</option>
-			<option value="HEX">HEX</option>
-			<option value="BIN">BIN</option>
+		<select type="text" bind="state.encoding">
+			<option value="txt">TXT</option>
+			<option value="dec">DEC</option>
+			<option value="hex">HEX</option>
+			<option value="bin">BIN</option>
 		</select>
 	</div>
 	<div>
+		<label><input type="checkbox" bind="state.sendBIN"/>Serial</label>
+		<label><input type="checkbox" bind="state.sendTXT"/>Socket</label>
 		<label><input type="checkbox" bind="state.autoScroll"/>Auto Scroll</label>
 		<label><input type="checkbox" bind="state.autoReset"/>Auto Reset</label>
 	</div>
 	<div>
 		<button onclick="clearOutput()">Clear Console</button>
+		<button onclick="resetAVR()">Reset uC</button>
 	</div>
 </nav>
-<script type="text/javascript" src="decoder.js"></script>
 <script type="text/javascript" src="request.js"></script>
 <script type="text/javascript" src="console.js"></script>

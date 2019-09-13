@@ -1,8 +1,7 @@
 #include "main.h"
-#include "uart.h"
+#include "bridge.h"
 #include "wifi.h"
 #include "http.h"
-#include "ws.h"
 #include "ui.h"
 
 Config cfg;
@@ -15,20 +14,15 @@ Adafruit_SSD1306 display(128, 64, &Wire, -1, 800000UL, 800000UL);
 uint32_t tmr;
 uint16_t dur;
 
-Ticker hb([]() {  }, 500, MILLIS);
-
 void setup() {
 
-  avrprog.setReset(true);
-  serial_setup();
+  uart_init();
+  gpio_init();
+  ui_init();
+  wifi_init();
+  bridge_init();
 
   SPIFFS.begin();
-
-  pinMode(cfg.led_pin, OUTPUT);
-  digitalWrite(cfg.led_pin, LOW);
-
-  ui_init();
-  wifi_setup();
 
   MDNS.begin(cfg.hostname);
   MDNS.addService("avrisp", "tcp", 23);
@@ -38,9 +32,6 @@ void setup() {
 
   ArduinoOTA.setHostname(cfg.hostname);
   ArduinoOTA.begin(true);
-
-  ws.onEvent(ws_handler);
-  ws.begin();
 
   avrprog.begin();
   avrprog.setReset(false);
@@ -75,14 +66,8 @@ void setup() {
   // http.on("/command/detect_baudrate", baudrate_detect_handler);
 
   http.begin();
-  ss.setNoDelay(true);
-  ss.begin();
-
-  hb.start();
 }
 
-WiFiClient clients[4];
-uint8_t buf[512];
 void loop() {
   tmr = millis();
   wifi_check();
@@ -91,44 +76,13 @@ void loop() {
   ArduinoOTA.handle();
   http.handleClient();
 
-
-
   switch (avrprog.update()) {
     case AVRISP_STATE_PENDING:
     case AVRISP_STATE_ACTIVE:
       avrprog.serve();
       break;
     case AVRISP_STATE_IDLE:
-      ws.loop();
-      hb.update();
-      serial_loop();
-
-
-      for (int i = 0; i < 4; i++) {
-        if (!clients[i]) { // equivalent to !serverClients[i].connected()
-          clients[i] = ss.available();
-          break;
-        }
-      }
-
-      for (int i = 0; i < 4; i++) {
-        while (clients[i].available() && Serial.availableForWrite()) {
-          Serial.write(clients[i].read());
-        }
-      }
-      if (Serial.available()) {
-        size_t b = 0;
-        while (Serial.available() && b < 512) {
-          buf[b++] = Serial.read();
-        }
-        ws.broadcastBIN(buf, b);
-        for (int i = 0; i < 4; i++) {
-          if (clients[i] && clients[i].availableForWrite()) {
-            clients[i].write(buf, b);
-          }
-        }
-      }
-
+      bridge_loop();
       ui_loop();
       break;
   }

@@ -4,7 +4,7 @@
 
 void wifi_check();
 
-void wifi_setup();
+void wifi_init();
 
 void wifi_handle_http_req();
 

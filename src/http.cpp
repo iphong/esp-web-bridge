@@ -1,8 +1,14 @@
+
+#include "bridge.h"
 #include "http.h"
-#include "uart.h"
 #include "wifi.h"
 
 File fs_upload_file;
+
+void send_headers() {
+    http.sendHeader("Access-Control-Allow-Origin", "*");
+    http.sendHeader("Access-Control-Allow-Methods", "*");
+}
 
 void send_ok() {
   http.send(200, "application/json", "\"OK\"");
@@ -186,8 +192,7 @@ void fs_list_handler() {
 }
 
 void fs_handler() {
-  http.sendHeader("Access-Control-Allow-Origin", "*");
-  http.sendHeader("Access-Control-Allow-Methods", "*");
+  send_headers();
   switch (http.method()) {
     case HTTP_GET:    fs_read_handler();   break;
     case HTTP_PUT:    fs_create_handler(); break;
@@ -220,18 +225,19 @@ bool save_cfg_bool(bool *addr, String arg) {
 }
 
 void config_handler() {
+  send_headers();
   switch (http.method()) {
     case HTTP_POST: {
       bool serial = false;
       save_cfg_int(&cfg.reset_pin, "reset_pin");
-      serial |= save_cfg_int(&cfg.serial_baud, "serial_baud");
-      serial |= save_cfg_bool(&cfg.serial_swap, "serial_swap");
-      if (http.hasArg("serial_mode")) {
-        cfg.serial_mode = http.arg("serial_mode").c_str();
+      serial |= save_cfg_int(&cfg.bridge_baud, "bridge_baud");
+      serial |= save_cfg_bool(&cfg.bridge_swap, "bridge_swap");
+      if (http.hasArg("bridge_mode")) {
+        cfg.bridge_mode = http.arg("bridge_mode").c_str();
         serial = true;
       }
-      if (serial_active) {
-        serial_setup();
+      if (uart_active) {
+        bridge_init();
       }
       send_ok();
       break;
@@ -240,15 +246,15 @@ void config_handler() {
       char res[1024];
       sprintf(res,
         "{"
-          "\"serial_mode\": \"%s\","
-          "\"serial_baud\": %u,"
-          "\"serial_swap\": %u,"
+          "\"bridge_mode\": \"%s\","
+          "\"bridge_baud\": %u,"
+          "\"bridge_swap\": %u,"
           "\"reset_pin\": %u,"
           "\"hostname\": \"%s\""
         "}",
-        cfg.serial_mode,
-        cfg.serial_baud,
-        cfg.serial_swap,
+        cfg.bridge_mode,
+        cfg.bridge_baud,
+        cfg.bridge_swap,
         cfg.reset_pin,
         cfg.hostname
       );
@@ -260,10 +266,11 @@ void config_handler() {
 }
 
 void wifi_handler() {
+  send_headers();
   if (http.hasArg("ssid") && http.hasArg("pass")) {
     cfg.sta_ssid = http.arg("ssid").c_str();
     cfg.sta_pass = http.arg("pass").c_str();
-    wifi_setup();
+    wifi_init();
     send_json((char *)"OK");
   } else {
     send_json((char *)"NOT OK");

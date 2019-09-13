@@ -112,10 +112,10 @@ class StringDecoder {
 
 function utf8_to_ascii(input) {
 	const S = String.fromCodePoint
-	const K = input.charCodeAt.bind(input)
+	const next = () => input.charCodeAt(i++)
 	let i = 0, output = ''
 	while (input[i]) {
-		let char = K(i++)
+		let char = next()
 		if (char > 0xff || (char & (1 << 7))) {
 			if (char >> 13) {
 				output += S((char >> 18 & 0b111) | (0b1111 << 4)) // 4
@@ -133,10 +133,10 @@ function utf8_to_ascii(input) {
 
 function ascii_to_utf8(input) {
 	const S = String.fromCodePoint
-	const K = input.charCodeAt.bind(input)
+	const next = () => input.charCodeAt(i++)
 	let i = 0, char, char2, char3, char4, output = ''
 	while (input[i]) {
-		let char = K(i++)
+		let char = next()
 		switch (char >> 4) {
 			case 0:
 			case 1:
@@ -152,20 +152,20 @@ function ascii_to_utf8(input) {
 			case 12:
 			case 13:
 				// 110x xxxx   10xx xxxx
-				char2 = K(i++)
+				char2 = next()
 				output += S(((char & 0x1F) << 6) | (char2 & 0x3F))
 				break
 			case 14:
 				// 1110 xxxx  10xx xxxx  10xx xxxx
-				char2 = K(i++)
-				char3 = K(i++)
+				char2 = next()
+				char3 = next()
 				output += S(((char & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0))
 				break
 			case 15:
 				// 1111 0xxx 10xx xxxx 10xx xxxx 10xx xxxx
-				char2 = K(i++)
-				char3 = K(i++)
-				char4 = K(i++)
+				char2 = next()
+				char3 = next()
+				char4 = next()
 				output += S(((char & 0x07) << 18) | ((char2 & 0x3F) << 12) | ((char3 & 0x3F) << 6) | (char4 & 0x3F))
 				break
 		}
@@ -174,16 +174,16 @@ function ascii_to_utf8(input) {
 }
 
 
-function utf8_to_ascii_raw(input) {
-	const K = input.charCodeAt.bind(input)
+function utf8_decode(input) {
 	let i = 0, output = []
+	const next = () => input.charCodeAt(i++)
 	while (input[i]) {
-		let char = K(i++)
+		let char = next()
 		if (char > 0xff || (char & (1 << 7))) {
-			if (char >> 13) {
+			if (char >> 12) {
 				output.push((char >> 18 & 0b111) | (0b1111 << 4)) // 4
 			}
-			if (char >> 7) {
+			if (char >> 6) {
 				output.push((char >> 12 & 0b1111) | (0b111 << 5)) // 3
 			}
 			output.push((char >> 6 & 0b111111) | (0b1 << 7)) // 2
@@ -194,11 +194,38 @@ function utf8_to_ascii_raw(input) {
 	return output
 }
 
-function ascii_to_utf8_raw(input) {
-	const K = input.charCodeAt.bind(input)
-	let i = 0, char, char2, char3, char4, output = []
+function hex_decode(input) {
+	let i = 0, output = []
+	const next = () => input.charCodeAt(i++)
 	while (input[i]) {
-		let char = K(i++)
+		output.push(parseInt(next() + next(), 16))
+	}
+	return output
+}
+
+function hex_decode(input, seprator = ' ') {
+	let i = 0, output = []
+	const next = () => input.slice(i++, i++)
+	while (input[i+1]) {
+		output.push(parseInt(next(), 16))
+	}
+	return output
+}
+
+function bin_decode(input, seprator = ' ') {
+	let i = 0, output = []
+	const next = () => input.charCodeAt(i++)
+	while (input[i]) {
+		output.push(parseInt(next() + next(), 16))
+	}
+	return output
+}
+
+function ascii_to_utf8_raw(input) {
+	let i = 0, char, char2, char3, char4, output = []
+	const next = () => input.charCodeAt(i++)
+	while (input[i]) {
+		let char = next()
 		switch (char >> 4) {
 			case 0:
 			case 1:
@@ -214,20 +241,20 @@ function ascii_to_utf8_raw(input) {
 			case 12:
 			case 13:
 				// 110x xxxx   10xx xxxx
-				char2 = K(i++)
+				char2 = next()
 				output.push(((char & 0x1F) << 6) | (char2 & 0x3F))
 				break
 			case 14:
 				// 1110 xxxx  10xx xxxx  10xx xxxx
-				char2 = K(i++)
-				char3 = K(i++)
+				char2 = next()
+				char3 = next()
 				output.push(((char & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0))
 				break
 			case 15:
 				// 1111 0xxx 10xx xxxx 10xx xxxx 10xx xxxx
-				char2 = K(i++)
-				char3 = K(i++)
-				char4 = K(i++)
+				char2 = next()
+				char3 = next()
+				char4 = next()
 				output.push(((char & 0x07) << 18) | ((char2 & 0x3F) << 12) | ((char3 & 0x3F) << 6) | (char4 & 0x3F))
 				break
 		}
